@@ -31,11 +31,14 @@ class Funcs():
         self.conn.commit(); print("Banco de dados criado")
         self.desconecta_bd()
     
-    def add_cliente(self):
+    def variaveis(self):
         self.codigo = self.codigo_entry.get()
         self.nome = self.nome_entry.get()
         self.telefone = self.telefone_entry.get()
         self.cidade = self.cidade_entry.get()
+    
+    def add_cliente(self):
+        self.variaveis()
         self.conecta_bd()
         self.cursor.execute('''INSERT INTO Clientes(nome_cliente, telefone, cidade) VALUES(?, ?, ?)''', (self.nome, self.telefone, self.cidade))
         self.conn.commit(); print('Dados adicionados com sucesso')
@@ -50,6 +53,28 @@ class Funcs():
         for i in lista:
             self.listaCli.insert("", END, values=i)
         self.desconecta_bd()
+
+    def onDoubleClick(self, event):
+        self.listaCli.selection()
+
+        for n in self.listaCli.selection():
+            col1, col2, col3, col4 = self.listaCli.item(n, 'values')
+            self.codigo_entry.insert(END, col1)
+            self.nome_entry.insert(END, col2)
+            self.telefone_entry.insert(END, col3)
+            self.cidade_entry.insert(END, col4)
+        
+    def deleta_cliente(self):
+        self.variaveis()
+        self.conecta_bd()
+        self.cursor.execute('''DELETE FROM Clientes WHERE cod = ? ''',(self.codigo))
+        self.conn.commit()
+
+        self.desconecta_bd()
+        self.limpa_tela()
+        self.select_lista()
+
+
 
 
 class Application(Funcs):
@@ -91,7 +116,7 @@ class Application(Funcs):
         self.btn_alterar = Button(self.frame_1, text='Alterar', bd=2, bg='#107db2', fg='white', font=('verdana',8,'bold'))
         self.btn_alterar.place(relx= 0.7, rely= 0.1, relheight=0.15, relwidth=0.1)
 
-        self.btn_apagar = Button(self.frame_1, text='Apagar', bd=2, bg='#107db2', fg='white', font=('verdana',8,'bold'))
+        self.btn_apagar = Button(self.frame_1, text='Apagar', bd=2, bg='#107db2', fg='white', font=('verdana',8,'bold'), command=self.deleta_cliente)
         self.btn_apagar.place(relx= 0.8, rely= 0.1, relheight=0.15, relwidth=0.1)
 
         ###Criação da label e entrada do codigo
@@ -138,6 +163,7 @@ class Application(Funcs):
         self.scroolLista = Scrollbar(self.frame_2, orient='vertical')
         self.listaCli.configure(yscroll=self.scroolLista.set)
         self.scroolLista.place(relx=0.96, rely=0.1, relwidth=0.02, relheight=0.85)
+        self.listaCli.bind("<Double-1>", self.onDoubleClick)
 
 
     
