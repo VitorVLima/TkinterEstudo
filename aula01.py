@@ -95,6 +95,9 @@ class Funcs():
     
     def add_cliente(self):
         self.variaveis()
+        if not self.nome or not self.telefone or not self.cidade:
+            print("Todos os campos devem ser preenchidos!")
+            return  # Se algum campo estiver vazio, a inserção é interrompida.
         self.conecta_bd()
 
         try:
